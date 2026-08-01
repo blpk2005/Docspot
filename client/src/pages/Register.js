@@ -11,8 +11,21 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // Strip any non-digit characters from the phone field
+    const sanitized = name === "phone" ? value.replace(/\D/g, "") : value;
+    setForm({ ...form, [name]: sanitized });
     setError("");
+  };
+
+  const handlePhoneKeyDown = (e) => {
+    // Allow: digits, backspace, delete, tab, arrows, home, end
+    const allowed = [
+      "Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"
+    ];
+    if (allowed.includes(e.key)) return;
+    // Block anything that isn't a digit 0-9
+    if (!/^\d$/.test(e.key)) e.preventDefault();
   };
 
   const handleSubmit = async (e) => {
@@ -83,7 +96,9 @@ const Register = () => {
                 <label htmlFor="reg-phone">Phone</label>
                 <input id="reg-phone" className="form-control" type="tel"
                   name="phone" placeholder="9876543210"
-                  value={form.phone} onChange={handleChange} />
+                  value={form.phone} onChange={handleChange}
+                  onKeyDown={handlePhoneKeyDown}
+                  inputMode="numeric" maxLength={10} />
               </div>
             </div>
 
