@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const path = require("path");
+const fs = require("fs");
 const cors = require("cors");
 const connectDB = require("./config/db");
 
@@ -38,7 +39,11 @@ app.use("/api/doctors", require("./routes/doctorRoutes"));
 app.use("/api/appointments", require("./routes/appointmentRoutes"));
 
 // ── STATIC FILES ─────────────────────────────────────────────────
-app.use("/uploads", express.static("uploads"));
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+app.use("/uploads", express.static(uploadDir));
 
 // ── START ─────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;

@@ -9,22 +9,60 @@ const authMiddleware = require("../middleware/authMiddleware");
 // ================= MULTER CONFIG =================
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+
+const uploadDir = path.join(__dirname, "../uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
+  fileFilter: (req, file, cb) => {
+    const allowed = [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx"];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only document and image files (.pdf, .jpg, .png, .doc, .docx) are allowed."));
+    }
+  },
+});
+
+// Middleware to handle multer upload errors cleanly
+const handleUpload = (req, res, next) => {
+  upload.single("document")(req, res, (err) => {
+    if (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res.status(400).send("File too large. Maximum size is 10MB.");
+        }
+        return res.status(400).send(`File upload error: ${err.message}`);
+      }
+      return res.status(400).send(err.message || "File upload failed.");
+    }
+    next();
+  });
+};
 
 // ================= BOOK APPOINTMENT =================
 router.post(
   "/book-appointment",
-  upload.single("document"),  // multer FIRST — populates req.body before auth reads it
+  handleUpload,  // multer FIRST — populates req.body before auth reads it
   authMiddleware,
   async (req, res) => {
     try {

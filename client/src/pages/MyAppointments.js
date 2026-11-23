@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../context/AuthContext";
-import api from "../utils/api";
+import api, { BASE_URL } from "../utils/api";
 
 const statusColors = {
     pending: "badge-pending",
@@ -125,7 +125,7 @@ const MyAppointments = () => {
                                         <td>
                                             {appt.document ? (
                                                 <a
-                                                    href={`http://localhost:8080/uploads/${appt.document}`}
+                                                    href={`${BASE_URL}/uploads/${appt.document}`}
                                                     target="_blank"
                                                     rel="noreferrer"
                                                     className="btn btn-sm btn-outline"

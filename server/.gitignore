@@ -20,7 +20,8 @@ yarn-error.log*
 coverage/
 
 # Uploaded files (user content — should not be in git)
-uploads/
+uploads/*
+!uploads/.gitkeep
 
 # OS & editor junk
 .DS_Store

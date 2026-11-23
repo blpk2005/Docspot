@@ -34,7 +34,17 @@ const BookAppointment = () => {
     }, [preselectedDoctor]);
 
     const handleFileChange = (e) => {
-        setDocFile(e.target.files[0]);
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) {
+                setError("File is too large. Please select a document under 10MB.");
+                setDocFile(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+                return;
+            }
+            setDocFile(file);
+            setError("");
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -50,9 +60,7 @@ const BookAppointment = () => {
             formData.append("date", date);
             if (docFile) formData.append("document", docFile);
 
-            const { data } = await api.post("/appointments/book-appointment", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            const { data } = await api.post("/appointments/book-appointment", formData);
 
             if (typeof data === "string" && data.toLowerCase().includes("success")) {
                 setSuccess("🎉 Appointment booked successfully! You'll be notified once confirmed.");
@@ -61,7 +69,8 @@ const BookAppointment = () => {
                 setError(typeof data === "string" ? data : "Booking failed.");
             }
         } catch (err) {
-            setError("Booking failed. Please try again.");
+            const errorMsg = err.response?.data;
+            setError(typeof errorMsg === "string" ? errorMsg : "Booking failed. Please try again.");
         }
         setLoading(false);
     };
@@ -163,8 +172,26 @@ const BookAppointment = () => {
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 <div className="upload-icon">📎</div>
-                                <p>Click to upload medical records, insurance, etc.</p>
-                                {docFile && <div className="file-name">✅ {docFile.name}</div>}
+                                <p>Click to upload medical records, insurance (PDF, JPG, PNG, DOCX up to 10MB)</p>
+                                {docFile && (
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8, padding: "6px 12px", background: "var(--primary-light)", borderRadius: "var(--radius-sm)" }}>
+                                        <div className="file-name" style={{ margin: 0, fontWeight: 600, color: "var(--primary)" }}>
+                                            📄 {docFile.name} ({(docFile.size / 1024 / 1024).toFixed(2)} MB)
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="btn btn-danger btn-sm"
+                                            style={{ padding: "2px 8px", fontSize: "0.75rem", lineHeight: 1 }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setDocFile(null);
+                                                if (fileInputRef.current) fileInputRef.current.value = "";
+                                            }}
+                                        >
+                                            ✕ Remove
+                                        </button>
+                                    </div>
+                                )}
                                 <input
                                     ref={fileInputRef}
                                     id="doc-upload"

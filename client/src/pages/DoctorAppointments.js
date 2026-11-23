@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
-import api from "../utils/api";
+import api, { BASE_URL } from "../utils/api";
 
 const SPECIALIZATIONS = [
     "General Physician", "Cardiologist", "Dermatologist", "Neurologist",
@@ -245,7 +245,7 @@ const DoctorAppointments = () => {
                                         </td>
                                         <td>
                                             {appt.document ? (
-                                                <a href={`http://localhost:8080/uploads/${appt.document}`}
+                                                <a href={`${BASE_URL}/uploads/${appt.document}`}
                                                     target="_blank" rel="noreferrer" className="btn btn-sm btn-outline">
                                                     📎 View
                                                 </a>
