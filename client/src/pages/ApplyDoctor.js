@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../context/AuthContext";
@@ -27,6 +27,12 @@ const ApplyDoctor = () => {
         fees: "",
         timings: [""],
     });
+
+    useEffect(() => {
+        if (user?.isDoctor) {
+            navigate("/doctor-appointments", { replace: true });
+        }
+    }, [user, navigate]);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });

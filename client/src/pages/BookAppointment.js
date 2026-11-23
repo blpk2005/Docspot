@@ -20,6 +20,12 @@ const BookAppointment = () => {
     const [error, setError] = useState("");
 
     useEffect(() => {
+        if (user?.isDoctor) {
+            navigate("/doctor-appointments", { replace: true });
+        }
+    }, [user, navigate]);
+
+    useEffect(() => {
         if (!preselectedDoctor) {
             api.get("/doctors/get-all-doctors").then(({ data }) => {
                 setDoctors(data.filter((d) => d.status === "approved"));

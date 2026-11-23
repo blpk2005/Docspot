@@ -2,7 +2,12 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const ProtectedRoute = ({ children, adminOnly = false, doctorOnly = false }) => {
+const ProtectedRoute = ({
+    children,
+    adminOnly = false,
+    doctorOnly = false,
+    patientOnly = false,
+}) => {
     const { user, loading } = useAuth();
 
     if (loading) {
@@ -16,6 +21,8 @@ const ProtectedRoute = ({ children, adminOnly = false, doctorOnly = false }) => 
     if (!user) return <Navigate to="/" replace />;
     if (adminOnly && !user.isAdmin) return <Navigate to="/dashboard" replace />;
     if (doctorOnly && !user.isDoctor && !user.isAdmin) return <Navigate to="/dashboard" replace />;
+    if (patientOnly && user.isDoctor) return <Navigate to="/doctor-appointments" replace />;
+    if (patientOnly && user.isAdmin) return <Navigate to="/dashboard" replace />;
 
     return children;
 };

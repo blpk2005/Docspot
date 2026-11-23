@@ -47,12 +47,16 @@ const DoctorAppointments = () => {
                     timings: data.doctor.timings?.length ? data.doctor.timings : [""],
                 });
             }
-            try {
-                const usersRes = await api.get("/users/get-all-users");
-                const map = {};
-                (usersRes.data || []).forEach(u => { map[u._id] = u; });
-                setUsers(map);
-            } catch (_) { }
+            if (data.patientsMap) {
+                setUsers(data.patientsMap);
+            } else {
+                try {
+                    const usersRes = await api.get("/users/get-all-users");
+                    const map = {};
+                    (usersRes.data || []).forEach(u => { map[u._id] = u; });
+                    setUsers(map);
+                } catch (_) { }
+            }
         } catch (err) {
             console.error("Doctor dashboard error:", err.response?.data || err.message);
         }

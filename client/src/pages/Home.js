@@ -57,24 +57,53 @@ const Home = () => {
             Find Your <span>Perfect Doctor</span>
           </h1>
           <p>
-            Browse from our network of{" "}
-            <strong>{doctors.length}+ verified doctors</strong>. Book an
-            appointment instantly and get the care you deserve.
+            {user?.isDoctor
+              ? "Welcome to your doctor portal. Manage your received appointments and patient consultations."
+              : user?.isAdmin
+              ? "Welcome to the administrator dashboard. Monitor platform doctors, users, and appointments."
+              : `Browse from our network of ${doctors.length}+ verified doctors. Book an appointment instantly and get the care you deserve.`}
           </p>
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            <button
-              className="btn btn-primary"
-              onClick={() => navigate("/book-appointment")}
-            >
-              📅 Book Appointment
-            </button>
-            <button
-              className="btn"
-              style={{ background: "rgba(255,255,255,0.15)", color: "white" }}
-              onClick={() => navigate("/appointments")}
-            >
-              📋 My Appointments
-            </button>
+            {user?.isDoctor ? (
+              <button
+                className="btn btn-primary"
+                onClick={() => navigate("/doctor-appointments")}
+              >
+                📋 View Received Appointments
+              </button>
+            ) : user?.isAdmin ? (
+              <>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => navigate("/admin/appointments")}
+                >
+                  📋 All Appointments
+                </button>
+                <button
+                  className="btn"
+                  style={{ background: "rgba(255,255,255,0.15)", color: "white" }}
+                  onClick={() => navigate("/admin/doctors")}
+                >
+                  👨‍⚕️ Manage Doctors
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => navigate("/book-appointment")}
+                >
+                  📅 Book Appointment
+                </button>
+                <button
+                  className="btn"
+                  style={{ background: "rgba(255,255,255,0.15)", color: "white" }}
+                  onClick={() => navigate("/appointments")}
+                >
+                  📋 My Appointments
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

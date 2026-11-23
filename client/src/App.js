@@ -42,9 +42,9 @@ function App() {
           <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
 
           {/* ── Patient Only ── */}
-          <Route path="/book-appointment" element={<ProtectedRoute><BookAppointment /></ProtectedRoute>} />
-          <Route path="/appointments" element={<ProtectedRoute><MyAppointments /></ProtectedRoute>} />
-          <Route path="/apply-doctor" element={<ProtectedRoute><ApplyDoctor /></ProtectedRoute>} />
+          <Route path="/book-appointment" element={<ProtectedRoute patientOnly><BookAppointment /></ProtectedRoute>} />
+          <Route path="/appointments" element={<ProtectedRoute patientOnly><MyAppointments /></ProtectedRoute>} />
+          <Route path="/apply-doctor" element={<ProtectedRoute patientOnly><ApplyDoctor /></ProtectedRoute>} />
 
           {/* ── Doctor Only ── */}
           <Route path="/doctor-appointments" element={<ProtectedRoute doctorOnly><DoctorAppointments /></ProtectedRoute>} />

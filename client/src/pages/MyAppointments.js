@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
+import { useAuth } from "../context/AuthContext";
 import api from "../utils/api";
 
 const statusColors = {
@@ -12,14 +14,20 @@ const statusColors = {
 };
 
 const MyAppointments = () => {
+    const { user } = useAuth();
+    const navigate = useNavigate();
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(null);
     const [doctorsMap, setDoctorsMap] = useState({});
 
     useEffect(() => {
+        if (user?.isDoctor) {
+            navigate("/doctor-appointments", { replace: true });
+            return;
+        }
         fetchData();
-    }, []);
+    }, [user, navigate]);
 
     const fetchData = async () => {
         try {
