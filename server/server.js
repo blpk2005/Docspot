@@ -29,6 +29,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ── ROUTES ───────────────────────────────────────────────────────
+const mongoose = require("mongoose");
+app.get("/api/health", (req, res) => {
+  const stateMap = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting",
+  };
+  const dbState = mongoose.connection.readyState;
+  res.json({
+    server: "online",
+    database: stateMap[dbState] || "unknown",
+    hasMongoUrl: !!process.env.MONGO_URL,
+    readyState: dbState,
+  });
+});
+
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/doctors", require("./routes/doctorRoutes"));
 app.use("/api/appointments", require("./routes/appointmentRoutes"));

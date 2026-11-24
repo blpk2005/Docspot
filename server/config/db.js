@@ -1,15 +1,24 @@
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
+  const rawUrl = process.env.MONGO_URL;
+  if (!rawUrl) {
+    console.error("⚠️ MONGO_URL environment variable is missing in Render Environment Variables!");
+    return;
+  }
+
+  const mongoUri = rawUrl.trim().replace(/^["']|["']$/g, "");
+
   try {
-    if (!process.env.MONGO_URL) {
-      console.error("⚠️ MONGO_URL environment variable is missing!");
-      return;
-    }
-    await mongoose.connect(process.env.MONGO_URL);
-    console.log("✅ MongoDB Connected");
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 10000,
+    });
+    console.log("✅ MongoDB Connected Successfully");
   } catch (error) {
-    console.error("❌ MongoDB connection error:", error.message);
+    console.error("❌ MongoDB connection failed:", error.name, error.message);
+    if (error.name === "MongoServerSelectionError") {
+      console.error("👉 IP Whitelist hint: In MongoDB Atlas -> Network Access, ensure 0.0.0.0/0 is added so Render can connect!");
+    }
   }
 };
 
