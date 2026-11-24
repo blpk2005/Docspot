@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "DocSpot - Seamless Appointment Booking for Health",
   "scripts": {
-    "start": "cd server && npm start",
-    "postinstall": "cd server && npm install",
-    "build": "cd server && npm install",
-    "server": "cd server && npm start",
-    "client": "cd client && npm start"
+    "start": "node server/server.js",
+    "build": "npm run install-server && npm run install-client && npm run build-client",
+    "install-server": "cd server && npm install",
+    "install-client": "cd client && npm install",
+    "build-client": "cd client && npm run build",
+    "postinstall": "npm run build"
   }
 }
