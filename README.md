@@ -11,3 +11,4 @@ JWT_SECRET=your_screat_key
 EMAIL_USER="a email to send the foorget password link"
 
 EMAIL_PASS="password for a app find in Goggle -> mange accounts -> search for "App password" -> create "Mail" app and password will be genrated copy paaste it withoout spaces"
+#for code rabbit review
